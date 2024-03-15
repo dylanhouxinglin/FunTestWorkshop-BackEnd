@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -30,8 +31,9 @@ func UpdateRank(c *gin.Context) {
 	}
 	exceededRate = 66.3
 
-	rdb := ConnToRedis()
-	if rdb == nil {
+	rdb, err := ConnToRedis()
+	if err != nil {
+		log.Printf("Connect to redis err: %v\n", err)
 		return
 	}
 	defer rdb.Close()

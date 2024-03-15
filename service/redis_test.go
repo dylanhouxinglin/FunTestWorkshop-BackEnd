@@ -1,9 +1,14 @@
 package service
 
-import "testing"
+import (
+	"context"
+	"testing"
+)
 
 func TestConnToRedis(t *testing.T) {
-	_ = ConnToRedis()
+	rdb, _ := ConnToRedis()
+	count := rdb.ZCard(context.Background(), "key")
+	t.Log(count)
 }
 
 func TestRank(t *testing.T) {
