@@ -47,14 +47,21 @@ func UpdateRank(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	if (req.CorrectCnt / req.QuestionCnt) >= 1 {
+		exceededRate = 100
+		return
+	}
+
 	rank, err := rdb.ZRank(ctx, redisKey, key).Result()
 	if err != nil {
 		return
 	}
+
 	rankLen, err := rdb.ZCard(ctx, redisKey).Result()
 	if err != nil {
 		return
 	}
+
 	exceededRate = 100 * float64(rank) / float64(rankLen)
 	exceededRate = math.Round(exceededRate*10) / 10
 	fmt.Println(rank, rankLen, exceededRate)
