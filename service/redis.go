@@ -3,6 +3,12 @@ package service
 import (
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
+	"os"
+)
+
+const (
+	ProdEnv = "PROD"
+	//DevEnv  = "DEV"
 )
 
 type redisConf struct {
@@ -21,10 +27,14 @@ func getRedisConf() (conf *redisConf, err error) {
 		return
 	}
 	conf = &redisConf{
-		Addr:     viper.GetString("Addr"),
+		Addr:     viper.GetString("AddrProd"),
 		PoolSize: viper.GetInt("PoolSize"),
 		UserName: viper.GetString("UserName"),
 		Passwd:   viper.GetString("Passwd"),
+	}
+	env := os.Getenv("CLOUD_ENV")
+	if env != ProdEnv {
+		conf.Addr = viper.GetString("AddrDev")
 	}
 	return
 }

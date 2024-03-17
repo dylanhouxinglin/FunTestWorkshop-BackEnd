@@ -1,4 +1,5 @@
-Addr: "redis-cnlfahxqtgec6e3iz.redis.ivolces.com:6379"
+AddrDev: "redis-cnlfahxqtgec6e3iz.redis.ivolces.com:6379"
+AddrProd: "redis-cnlfji5986n1ebcma.redis.ivolces.com:6379"
 PoolSize: 10
 UserName: "default"
 Passwd: "12250010Hou"
