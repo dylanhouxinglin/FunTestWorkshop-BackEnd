@@ -30,6 +30,10 @@ func UpdateRank(c *gin.Context) {
 		return
 	}
 	exceededRate = 66.3
+	if (req.CorrectCnt / req.QuestionCnt) >= 1 {
+		exceededRate = 100
+		return
+	}
 
 	rdb, err := ConnToRedis()
 	if err != nil {
@@ -40,16 +44,24 @@ func UpdateRank(c *gin.Context) {
 	ctx := context.Background()
 	key := strconv.FormatInt(time.Now().Unix(), 10)
 	redisKey := "rank_set"
-	err = rdb.ZAdd(ctx, redisKey, redis.Z{
-		Score:  req.CorrectRate,
-		Member: key,
-	}).Err()
-	if err != nil {
-		return
-	}
-	if (req.CorrectCnt / req.QuestionCnt) >= 1 {
-		exceededRate = 100
-		return
+
+	strRate := fmt.Sprintf("%f", req.CorrectRate)
+	members, _ := rdb.ZRangeByScore(ctx, redisKey, &redis.ZRangeBy{
+		Min:   strRate,
+		Max:   strRate,
+		Count: 1,
+	}).Result()
+	// do not add into zset if score exists
+	if len(members) > 0 {
+		key = members[0]
+	} else {
+		err = rdb.ZAdd(ctx, redisKey, redis.Z{
+			Score:  req.CorrectRate,
+			Member: key,
+		}).Err()
+		if err != nil {
+			return
+		}
 	}
 
 	rank, err := rdb.ZRank(ctx, redisKey, key).Result()
