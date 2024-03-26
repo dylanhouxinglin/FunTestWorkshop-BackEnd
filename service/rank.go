@@ -29,8 +29,8 @@ func UpdateRank(c *gin.Context) {
 	if err = c.ShouldBindJSON(&req); err != nil {
 		return
 	}
-	exceededRate = 66.3
-	if (req.CorrectCnt / req.QuestionCnt) >= 1 {
+	exceededRate = 66.6
+	if req.QuestionCnt > 0 && (req.CorrectCnt/req.QuestionCnt) >= 1 {
 		exceededRate = 100
 		return
 	}
